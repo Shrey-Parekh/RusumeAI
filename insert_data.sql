@@ -1,14 +1,8 @@
--- ============================================================================
--- INSERT DATA SCRIPT
--- This file contains all INSERT statements for populating the database
--- Run this after creating tables using resume.sql
--- ============================================================================
+-- Sample data for unified resume platform
 
 USE unified_resume_portal;
 
--- ============================================================================
--- RESUMES DATA (7 Comprehensive Entries)
--- ============================================================================
+-- Resume data
 
 INSERT INTO resumes (resume_title, resume_text, candidate_name, candidate_email, candidate_phone, experience_years, current_position, location) VALUES
 
@@ -251,9 +245,7 @@ CERTIFICATIONS
 AWS Certified Developer - Associate
 Meta Frontend Developer Professional Certificate', 'David Kumar', 'david.kumar@email.com', '(555) 777-8888', 7, 'Senior Frontend Engineer', 'San Francisco, CA');
 
--- ============================================================================
--- JOB DESCRIPTIONS DATA (7 Comprehensive Entries)
--- ============================================================================
+-- Job descriptions data
 
 INSERT INTO job_descriptions (job_title, job_description_text, company_name, department, employment_type, experience_required, salary_range, location, posted_by) VALUES
 

@@ -4,8 +4,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 try:
-    from hr.matching_engine import ResumeMatcher
-    from .db_manager import DatabaseManager
+    from ..models.matching_engine import ResumeMatcher
+    from ..database.db_manager import DatabaseManager
 except ImportError as e:
     print(f"Error importing HR modules: {e}")
     print(f"Current working directory: {os.getcwd()}")

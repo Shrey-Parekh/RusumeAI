@@ -23,15 +23,7 @@ class ProfileManager:
             os.makedirs(self.data_dir)
     
     def create_profile(self, profile_data: Dict[str, Any]) -> bool:
-        """
-        Create a new profile with validation
-        
-        Args:
-            profile_data: Dictionary containing profile information
-            
-        Returns:
-            bool: True if profile created successfully, False otherwise
-        """
+        """Create a new profile with validation"""
         try:
             # Validate profile data
             validation_errors = self.validate_profile(profile_data)
@@ -53,12 +45,7 @@ class ProfileManager:
             return False
     
     def load_profile(self) -> Optional[Dict[str, Any]]:
-        """
-        Load existing profile from file
-        
-        Returns:
-            dict: Profile data if exists, None otherwise
-        """
+        """Load existing profile from file"""
         try:
             if not os.path.exists(self.profile_file):
                 return None
@@ -73,15 +60,7 @@ class ProfileManager:
             return None
     
     def update_profile(self, profile_data: Dict[str, Any]) -> bool:
-        """
-        Update existing profile with validation
-        
-        Args:
-            profile_data: Dictionary containing updated profile information
-            
-        Returns:
-            bool: True if profile updated successfully, False otherwise
-        """
+        """Update existing profile with validation"""
         try:
             # Validate profile data
             validation_errors = self.validate_profile(profile_data)
@@ -107,12 +86,7 @@ class ProfileManager:
             return False
     
     def delete_profile(self) -> bool:
-        """
-        Delete existing profile
-        
-        Returns:
-            bool: True if profile deleted successfully, False otherwise
-        """
+        """Delete existing profile"""
         try:
             if os.path.exists(self.profile_file):
                 os.remove(self.profile_file)
@@ -123,15 +97,7 @@ class ProfileManager:
             return False
     
     def validate_profile(self, profile_data: Dict[str, Any]) -> List[str]:
-        """
-        Validate profile data against schema
-        
-        Args:
-            profile_data: Dictionary containing profile information
-            
-        Returns:
-            list: List of validation error messages (empty if valid)
-        """
+        """Validate profile data against schema"""
         errors = []
         
         # Check required top-level fields
@@ -200,12 +166,7 @@ class ProfileManager:
         return errors
     
     def get_profile_schema(self) -> Dict[str, Any]:
-        """
-        Get the expected profile schema structure
-        
-        Returns:
-            dict: Profile schema template
-        """
+        """Get the expected profile schema structure"""
         return {
             "personal_info": {
                 "name": "",

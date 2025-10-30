@@ -4,10 +4,10 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 try:
-    from job_seeker_pov.models.job_analyzer import JobAnalyzer
-    from job_seeker_pov.models.profile_manager import ProfileManager
-    from job_seeker_pov.models.resume_generator import ResumeGenerator
-    from .db_manager import DatabaseManager
+    from ..models.job_analyzer import JobAnalyzer
+    from ..models.profile_manager import ProfileManager
+    from ..models.resume_generator import ResumeGenerator
+    from ..database.db_manager import DatabaseManager
 except ImportError as e:
     print(f"Error importing Job Seeker modules: {e}")
     print(f"Current working directory: {os.getcwd()}")
@@ -17,7 +17,7 @@ except ImportError as e:
 class JobSeekerIntegration:
     def __init__(self):
         # Set correct data directory path for job seeker models
-        data_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'job_seeker_pov', 'data')
+        data_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
         
         self.job_analyzer = JobAnalyzer()
         self.profile_manager = ProfileManager(data_dir)

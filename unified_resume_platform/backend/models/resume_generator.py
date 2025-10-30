@@ -23,16 +23,7 @@ class ResumeGenerator:
         }
     
     def generate_resume(self, profile: Dict[str, Any], job_analysis: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Generate a tailored resume based on profile and job analysis
-        
-        Args:
-            profile: User profile data
-            job_analysis: Job analysis results from JobAnalyzer
-            
-        Returns:
-            dict: Generated resume data with prioritized content
-        """
+        """Generate a tailored resume based on profile and job analysis"""
         if not profile:
             raise ValueError("Profile data is required")
         
@@ -69,16 +60,7 @@ class ResumeGenerator:
         return resume_data
     
     def prioritize_content(self, profile: Dict[str, Any], job_keywords: List[str]) -> Dict[str, Any]:
-        """
-        Prioritize profile content based on job relevance
-        
-        Args:
-            profile: User profile data
-            job_keywords: Keywords extracted from job description
-            
-        Returns:
-            dict: Profile data with content prioritized by relevance
-        """
+        """Prioritize profile content based on job relevance"""
         if not profile:
             return {}
         
@@ -139,15 +121,7 @@ class ResumeGenerator:
         return prioritized_profile
     
     def format_resume(self, resume_data: Dict[str, Any]) -> str:
-        """
-        Format resume data into a professional text format
-        
-        Args:
-            resume_data: Generated resume data
-            
-        Returns:
-            str: Formatted resume text
-        """
+        """Format resume data into a professional text format"""
         if not resume_data:
             return ""
         

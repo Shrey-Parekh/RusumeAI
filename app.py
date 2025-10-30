@@ -1,14 +1,5 @@
 
-"""
-Unified Resume Platform - Main Flask Application
-
-This application provides a comprehensive resume management platform with two main components:
-1. HR Dashboard - For resume-job matching and analysis
-2. Job Seeker Tools - For profile management, job analysis, and resume generation
-
-The platform uses AI-powered analysis to match resumes with job descriptions and 
-helps job seekers create tailored resumes for specific positions.
-"""
+"""Unified Resume Platform - Main Flask Application"""
 
 import os
 import sys
@@ -18,16 +9,16 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
 try:
-    from unified_resume_platform.backend.hr_integration import HRIntegration
-    from unified_resume_platform.backend.jobseeker_integration import JobSeekerIntegration
+    from unified_resume_platform.backend.integrations.hr_integration import HRIntegration
+    from unified_resume_platform.backend.integrations.jobseeker_integration import JobSeekerIntegration
 except ImportError as e:
     print(f"Error importing backend modules: {e}")
     print(f"Current directory: {current_dir}")
     print(f"Python path: {sys.path}")
     raise
 
-template_folder = os.path.join(current_dir, 'unified_resume_platform', 'templates')
-static_folder = os.path.join(current_dir, 'unified_resume_platform', 'static')
+template_folder = os.path.join(current_dir, 'unified_resume_platform', 'frontend', 'templates')
+static_folder = os.path.join(current_dir, 'unified_resume_platform', 'frontend', 'static')
 
 app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
 app.config['SECRET_KEY'] = 'unified-resume-platform-2024'
@@ -87,7 +78,7 @@ def hr_sample_content(sample_type, name):
 def test_database():
     """Test database connection and data for debugging"""
     try:
-        from unified_resume_platform.backend.db_manager import DatabaseManager
+        from unified_resume_platform.backend.database.db_manager import DatabaseManager
         db_manager = DatabaseManager()
         
         if db_manager.connect():
@@ -230,8 +221,8 @@ def internal_error(_error):
 def check_database_connection():
     """Check database connection and display status on startup"""
     try:
-        from unified_resume_platform.backend.db_config import test_connection
-        from unified_resume_platform.backend.db_manager import DatabaseManager
+        from unified_resume_platform.backend.database.db_config import test_connection
+        from unified_resume_platform.backend.database.db_manager import DatabaseManager
         
         print("\n" + "="*60)
         print("DATABASE CONNECTION CHECK")

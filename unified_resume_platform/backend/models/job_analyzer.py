@@ -40,15 +40,7 @@ class JobAnalyzer:
         }
     
     def extract_keywords(self, job_description: str) -> List[str]:
-        """
-        Extract relevant keywords from job description
-        
-        Args:
-            job_description: Raw job description text
-            
-        Returns:
-            list: List of extracted keywords sorted by frequency
-        """
+        """Extract relevant keywords from job description"""
         if not job_description or not job_description.strip():
             return []
         
@@ -92,15 +84,7 @@ class JobAnalyzer:
         return [keyword for keyword, count in keyword_counts.most_common(20)]
     
     def identify_requirements(self, job_description: str) -> Dict[str, Any]:
-        """
-        Identify specific requirements from job description
-        
-        Args:
-            job_description: Raw job description text
-            
-        Returns:
-            dict: Structured requirements including skills, experience, education
-        """
+        """Identify specific requirements from job description"""
         if not job_description or not job_description.strip():
             return {
                 "required_skills": [],
@@ -194,16 +178,7 @@ class JobAnalyzer:
         }
     
     def calculate_relevance_score(self, profile: Dict[str, Any], job_requirements: Dict[str, Any]) -> float:
-        """
-        Calculate how well a profile matches job requirements
-        
-        Args:
-            profile: User profile data
-            job_requirements: Job requirements from identify_requirements()
-            
-        Returns:
-            float: Relevance score between 0.0 and 1.0
-        """
+        """Calculate how well a profile matches job requirements"""
         if not profile or not job_requirements:
             return 0.0
         

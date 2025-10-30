@@ -1,4 +1,6 @@
-# Kiro folder
+# Unified Resume Platform - .gitignore
+
+# Kiro IDE
 .kiro/
 
 # Python
@@ -22,40 +24,108 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # Virtual Environment
 venv/
 ENV/
 env/
+.venv/
 
-# IDE
+# IDE & Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.project
+.pydevproject
 
-# OS
+# OS Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
 # Flask
 instance/
 .webassets-cache
+.flask_session
 
-# Environment variables
+# Environment & Config
 .env
 .env.local
-
-# Logs
-*.log
+.env.production
+.env.development
+config.local.py
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
+*.db-journal
+
+# Resume Platform Specific
+# User uploaded files
+uploads/
+user_files/
+
+# Generated resumes
+generated_resumes/
+exports/
+
+# Profile data backups
+unified_resume_platform/data/backup/
+unified_resume_platform/data/*.backup
+
+# Logs
+*.log
+logs/
+unified_resume_platform/logs/
 
 # Temporary files
 *.tmp
 temp/
 tmp/
+.cache/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Documentation builds
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
