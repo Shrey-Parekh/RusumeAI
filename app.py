@@ -1,21 +1,13 @@
+
 """
-Unified Resume Platform - Main Application
+Unified Resume Platform - Main Flask Application
 
-This Flask application provides a unified platform for HR professionals and job seekers
-to analyze resume-job compatibility using advanced matching algorithms.
+This application provides a comprehensive resume management platform with two main components:
+1. HR Dashboard - For resume-job matching and analysis
+2. Job Seeker Tools - For profile management, job analysis, and resume generation
 
-Features:
-- HR Dashboard: Analyze resume compatibility with job descriptions
-- Job Seeker Dashboard: Analyze job descriptions for requirements
-- Database integration for storing resumes and job descriptions
-- RESTful API endpoints for frontend integration
-
-Routes:
-- /: Main landing page
-- /hr: HR dashboard interface
-- /jobseeker: Job seeker dashboard interface
-- /api/hr/*: HR-related API endpoints
-- /api/jobseeker/*: Job seeker-related API endpoints
+The platform uses AI-powered analysis to match resumes with job descriptions and 
+helps job seekers create tailored resumes for specific positions.
 """
 
 import os
@@ -54,7 +46,14 @@ def hr_dashboard():
 
 @app.route('/jobseeker')
 def jobseeker_dashboard():
-    return render_template('jobseeker_dashboard.html')
+    try:
+        # Load existing profile if available
+        profile_result = jobseeker_integration.get_profile()
+        profile = profile_result['data'] if profile_result['success'] else None
+        return render_template('jobseeker_dashboard.html', profile=profile)
+    except Exception as e:
+        print(f"Error loading profile for dashboard: {e}")
+        return render_template('jobseeker_dashboard.html', profile=None)
 
 @app.route('/api/hr/match', methods=['POST'])
 def hr_match():
@@ -133,11 +132,89 @@ def test_database():
             'message': f'Database error: {str(e)}'
         })
 
+@app.route('/api/jobseeker/profile', methods=['GET'])
+def jobseeker_get_profile():
+    try:
+        result = jobseeker_integration.get_profile()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/jobseeker/profile', methods=['POST', 'PUT'])
+def jobseeker_save_profile():
+    try:
+        data = request.get_json()
+        if request.method == 'POST':
+            result = jobseeker_integration.create_profile(data)
+        else:
+            result = jobseeker_integration.update_profile(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/jobseeker/validate', methods=['POST'])
+def jobseeker_validate():
+    try:
+        data = request.get_json()
+        result = jobseeker_integration.validate_profile(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 @app.route('/api/jobseeker/analyze', methods=['POST'])
 def jobseeker_analyze():
     try:
         data = request.get_json()
         result = jobseeker_integration.analyze_job(data.get('job_description', ''))
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/jobseeker/generate', methods=['POST'])
+def jobseeker_generate():
+    try:
+        data = request.get_json()
+        result = jobseeker_integration.generate_resume(
+            data.get('profile'),
+            data.get('analysis')
+        )
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/jobseeker/export', methods=['POST'])
+def jobseeker_export():
+    """Export resume in specified format and trigger download"""
+    try:
+        data = request.get_json()
+        result = jobseeker_integration.export_resume(
+            data.get('content'),
+            data.get('format'),
+            data.get('profile'),
+            data.get('job_description')
+        )
+        
+        if result['success'] and 'file_data' in result['data']:
+            # Return file for download with proper headers
+            from flask import make_response
+            
+            file_data = result['data']['file_data']
+            filename = result['data']['filename']
+            content_type = result['data']['content_type']
+            
+            # Create response with binary data
+            response = make_response(file_data)
+            response.headers['Content-Type'] = content_type
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response.headers['Content-Length'] = len(file_data)
+            
+            # Add cache control headers
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+            
+            return response
+        
         return jsonify(result)
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500

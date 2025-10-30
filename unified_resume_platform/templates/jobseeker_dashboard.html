@@ -17,7 +17,6 @@
                 <button class="tab-btn active" data-tab="profile">Profile Management</button>
                 <button class="tab-btn" data-tab="analysis">Job Analysis</button>
                 <button class="tab-btn" data-tab="resume">Resume Generation</button>
-                <button class="tab-btn" data-tab="history">Export History</button>
             </div>
             
             <div class="tab-content active" id="profile-tab">
@@ -204,26 +203,7 @@
                 </div>
             </div>
             
-            <div class="tab-content" id="history-tab">
-                <div class="history-section">
-                    <div class="section-header">
-                        <h2>Export History</h2>
-                        <button id="refreshHistoryBtn" class="btn btn-secondary">Refresh</button>
-                    </div>
-                    
-                    <div id="historyContainer" class="history-container">
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <h3>No Export History</h3>
-                            <p>Your resume exports will appear here</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>
@@ -257,10 +237,6 @@ function setupTabs() {
             
             this.classList.add('active');
             document.getElementById(tabId + '-tab').classList.add('active');
-            
-            if (tabId === 'history') {
-                loadHistory();
-            }
         });
     });
 }
@@ -274,7 +250,6 @@ function setupEventListeners() {
     document.getElementById('exportPdfBtn').addEventListener('click', () => exportResume('pdf'));
     document.getElementById('exportDocxBtn').addEventListener('click', () => exportResume('docx'));
     document.getElementById('exportTxtBtn').addEventListener('click', () => exportResume('txt'));
-    document.getElementById('refreshHistoryBtn').addEventListener('click', loadHistory);
     
     document.getElementById('addExperienceBtn').addEventListener('click', addExperienceSection);
     document.getElementById('addEducationBtn').addEventListener('click', addEducationSection);
@@ -708,11 +683,33 @@ async function exportResume(format) {
             })
         });
         
-        const result = await response.json();
-        
-        if (result.success) {
+        if (response.ok) {
+            // Handle file download
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            
+            // Get filename from response headers or generate one
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = `resume.${format}`;
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (filenameMatch) {
+                    filename = filenameMatch[1];
+                }
+            }
+            
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
             showNotification(`Resume exported as ${format.toUpperCase()}`, 'success');
         } else {
+            const result = await response.json();
             showNotification(result.message || 'Export failed', 'error');
         }
     } catch (error) {
@@ -723,59 +720,49 @@ async function exportResume(format) {
     }
 }
 
-async function loadHistory() {
-    try {
-        const response = await fetch('/api/jobseeker/history');
-        const result = await response.json();
-        
-        if (result.success) {
-            displayHistory(result.data);
-        }
-    } catch (error) {
-        console.error('Error loading history:', error);
-    }
-}
 
-function displayHistory(history) {
-    const container = document.getElementById('historyContainer');
-    
-    if (history.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <h3>No Export History</h3>
-                <p>Your resume exports will appear here</p>
-            </div>
-        `;
-        return;
-    }
-    
-    const historyHTML = history.map(entry => `
-        <div class="history-item">
-            <div class="history-info">
-                <div class="history-filename">${entry.filename || 'Unknown'}</div>
-                <div class="history-meta">
-                    <span class="history-format">${(entry.format || '').toUpperCase()}</span>
-                    <span class="history-date">${new Date(entry.timestamp).toLocaleDateString()}</span>
-                </div>
-            </div>
-            <div class="history-status ${entry.file_exists ? 'exists' : 'missing'}">
-                ${entry.file_exists ? 'Available' : 'Missing'}
-            </div>
-        </div>
-    `).join('');
-    
-    container.innerHTML = historyHTML;
-}
 
 function clearAnalysis() {
     document.getElementById('jobDescriptionText').value = '';
     document.getElementById('analysisResults').style.display = 'none';
     currentAnalysis = null;
+}
+
+function showLoading(show) {
+    // Simple loading implementation
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(btn => {
+        if (show) {
+            btn.disabled = true;
+            btn.classList.add('loading');
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        }
+    });
+}
+
+function showNotification(message, type) {
+    // Simple notification implementation
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <div class="notification-message">${message}</div>
+        </div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => document.body.removeChild(notification), 300);
+    }, 3000);
 }
 </script>
 {% endblock %}
