@@ -7,66 +7,15 @@ class UnifiedResumeApp {
     }
     
     init() {
-        this.setupCustomCursor();
-        this.setupAnimatedBackground();
         this.setupNavigation();
         this.setupGlobalEventListeners();
         this.setupNotifications();
         this.setupLoading();
         this.setupScrollAnimations();
         this.setupThemeToggle();
-        this.setupParticles();
-        this.setupTabIndicator();
-        this.setupRippleEffects();
     }
     
-    setupCustomCursor() {
-        if (window.innerWidth <= 768) return;
-        
-        const cursor = document.createElement('div');
-        cursor.className = 'custom-cursor';
-        document.body.appendChild(cursor);
-        
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-        
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-        
-        const animateCursor = () => {
-            cursorX += (mouseX - cursorX) * 0.1;
-            cursorY += (mouseY - cursorY) * 0.1;
-            
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-            
-            requestAnimationFrame(animateCursor);
-        };
-        animateCursor();
-        
-        document.querySelectorAll('a, button, .btn, .card-hover').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-    }
-    
-    setupAnimatedBackground() {
-        const bg = document.createElement('div');
-        bg.className = 'animated-bg';
-        document.body.appendChild(bg);
-        
-        const shapes = document.createElement('div');
-        shapes.className = 'geometric-shapes';
-        shapes.innerHTML = `
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-        `;
-        document.body.appendChild(shapes);
-    }
-    
+
     setupNavigation() {
         const navbar = document.querySelector('.navbar');
         const navLinks = document.querySelectorAll('.nav-link');
@@ -85,11 +34,9 @@ class UnifiedResumeApp {
                 link.classList.add('active');
             }
             
-            link.addEventListener('click', (e) => {
+            link.addEventListener('click', () => {
                 navLinks.forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
-                
-                this.createRipple(e, link);
             });
         });
         
@@ -148,103 +95,7 @@ class UnifiedResumeApp {
         }
     }
     
-    setupParticles() {
-        const heroSection = document.querySelector('.hero-section');
-        if (!heroSection) return;
-        
-        const particlesContainer = document.createElement('div');
-        particlesContainer.className = 'hero-particles';
-        heroSection.appendChild(particlesContainer);
-        
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 6 + 's';
-            particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-            particlesContainer.appendChild(particle);
-        }
-    }
-    
-    setupTabIndicator() {
-        const tabsNav = document.querySelector('.tabs-nav');
-        if (!tabsNav) return;
-        
-        const indicator = document.createElement('div');
-        indicator.className = 'tab-indicator';
-        tabsNav.appendChild(indicator);
-        this.tabIndicator = indicator;
-        
-        const updateIndicator = (activeTab) => {
-            const rect = activeTab.getBoundingClientRect();
-            const navRect = tabsNav.getBoundingClientRect();
-            
-            indicator.style.width = rect.width + 'px';
-            indicator.style.left = (rect.left - navRect.left) + 'px';
-        };
-        
-        const activeTab = tabsNav.querySelector('.tab-btn.active');
-        if (activeTab) {
-            setTimeout(() => updateIndicator(activeTab), 100);
-        }
-        
-        tabsNav.addEventListener('click', (e) => {
-            if (e.target.classList.contains('tab-btn')) {
-                updateIndicator(e.target);
-            }
-        });
-    }
-    
-    setupRippleEffects() {
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.btn, .nav-link, .tab-btn, .feature-card')) {
-                this.createRipple(e, e.target);
-            }
-        });
-    }
-    
-    createRipple(event, element) {
-        const ripple = document.createElement('div');
-        const rect = element.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = event.clientX - rect.left - size / 2;
-        const y = event.clientY - rect.top - size / 2;
-        
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple-animation 0.6s ease-out;
-            pointer-events: none;
-            z-index: 1000;
-        `;
-        
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple-animation {
-                to {
-                    transform: scale(2);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        element.style.position = 'relative';
-        element.style.overflow = 'hidden';
-        element.appendChild(ripple);
-        
-        setTimeout(() => {
-            ripple.remove();
-            style.remove();
-        }, 600);
-    }
-    
+
     setupGlobalEventListeners() {
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('nav-menu') || 
@@ -266,12 +117,7 @@ class UnifiedResumeApp {
                 navToggle.classList.remove('active');
             }
             
-            if (this.tabIndicator) {
-                const activeTab = document.querySelector('.tab-btn.active');
-                if (activeTab) {
-                    setTimeout(() => this.updateTabIndicator(activeTab), 100);
-                }
-            }
+
         });
         
         document.addEventListener('keydown', (e) => {

@@ -6,7 +6,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 try:
     from hr.matching_engine import ResumeMatcher
     from hr.sample_data import SAMPLE_RESUMES, SAMPLE_JOB_DESCRIPTIONS
-    from .db_manager import DatabaseManager
 except ImportError as e:
     print(f"Error importing HR modules: {e}")
     print(f"Current working directory: {os.getcwd()}")
@@ -16,8 +15,7 @@ except ImportError as e:
 class HRIntegration:
     def __init__(self):
         self.matcher = ResumeMatcher()
-        self.db_manager = DatabaseManager()
-
+    
     def analyze_match(self, resume_text, job_description):
         try:
             if not resume_text or not job_description:
@@ -27,45 +25,9 @@ class HRIntegration:
                     'data': None,
                     'errors': ['Missing required input']
                 }
-
+            
             analysis = self.matcher.get_match_analysis(resume_text, job_description)
-
-            # Try to save to database (optional - won't fail if DB is unavailable)
-            try:
-                if self.db_manager.connect():
-                    resume_id = self.db_manager.save_resume(resume_text)
-                    job_id = self.db_manager.save_job_description('Analyzed Job', 'Company', job_description)
-
-                    if resume_id and job_id:
-                        match_details = {
-                            'matching_skills': analysis.get('matching_skills', []),
-                            'missing_skills': analysis.get('missing_skills', []),
-                            'resume_skills': analysis.get('resume_skills', []),
-                            'jd_skills': analysis.get('jd_skills', [])
-                        }
-                        self.db_manager.save_resume_match(
-                            resume_id,
-                            job_id,
-                            analysis.get('match_score', 0),
-                            analysis.get('skill_match_percentage', 0),
-                            match_details
-                        )
-
-                        for skill in analysis.get('resume_skills', []):
-                            skill_id = self.db_manager.save_skill(skill, 'technical')
-                            if skill_id:
-                                self.db_manager.link_resume_skill(resume_id, skill_id)
-
-                        for skill in analysis.get('jd_skills', []):
-                            skill_id = self.db_manager.save_skill(skill, 'technical')
-                            if skill_id:
-                                is_required = skill in analysis.get('missing_skills', [])
-                                self.db_manager.link_job_skill(job_id, skill_id, is_required)
-
-                    self.db_manager.disconnect()
-            except Exception as db_error:
-                print(f"⚠ Database save failed (continuing without DB): {db_error}")
-
+            
             return {
                 'success': True,
                 'message': 'Match analysis completed successfully',
@@ -79,7 +41,7 @@ class HRIntegration:
                 'data': None,
                 'errors': [str(e)]
             }
-
+    
     def get_sample_data(self):
         try:
             return {
@@ -98,7 +60,7 @@ class HRIntegration:
                 'data': None,
                 'errors': [str(e)]
             }
-
+    
     def get_sample_content(self, sample_type, name):
         try:
             if sample_type == 'resume':
@@ -112,7 +74,7 @@ class HRIntegration:
                     'data': None,
                     'errors': ['Sample type must be "resume" or "job_description"']
                 }
-
+            
             if not content:
                 return {
                     'success': False,
@@ -120,7 +82,7 @@ class HRIntegration:
                     'data': None,
                     'errors': [f'Sample "{name}" not found']
                 }
-
+            
             return {
                 'success': True,
                 'message': 'Sample content retrieved successfully',
