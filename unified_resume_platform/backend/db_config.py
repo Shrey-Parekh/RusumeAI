@@ -7,8 +7,8 @@ import os
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'your_password',  # ← CHANGE THIS TO YOUR MYSQL PASSWORD
-    'database': 'unified_resume_platform',
+    'password': 'shrey123',  # ← Updated with actual MySQL password
+    'database': 'unified_resume_portal',
     'autocommit': False
 }
 
@@ -28,7 +28,7 @@ def get_db_connection():
         print(f"Error: {e}")
         print("\nPlease check:")
         print("1. MySQL server is running")
-        print("2. Database 'unified_resume_platform' exists")
+        print("2. Database 'unified_resume_portal' exists")
         print("3. Password in db_config.py is correct")
         print("4. Run: python init_database.py (to setup database)")
         print(f"{'='*60}\n")

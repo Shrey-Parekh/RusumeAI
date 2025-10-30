@@ -1,260 +1,330 @@
-{% extends "base.html" %}
-
-{% block title %}HR Tools - Unified Resume Platform{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}HR Tools - Unified Resume Platform{%
+endblock %} {% block content %}
 <div class="dashboard-header">
-    <div class="container">
-        <h1>HR Resume Matching Tools</h1>
-        <p>Analyze resume compatibility with job descriptions using advanced AI matching</p>
-    </div>
+  <div class="container">
+    <h1>HR Resume Matching Tools</h1>
+    <p>
+      Analyze resume compatibility with job descriptions using advanced AI
+      matching
+    </p>
+  </div>
 </div>
 
 <div class="dashboard-content">
-    <div class="container">
-        <div class="dashboard-grid">
-            <div class="input-panel">
-                <div class="panel-header">
-                    <h2>Input & Analysis</h2>
-                    <div class="sample-controls">
-                        <select id="resumeSample" class="sample-select">
-                            <option value="">Select Sample Resume</option>
-                        </select>
-                        <select id="jdSample" class="sample-select">
-                            <option value="">Select Sample Job Description</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="input-section">
-                    <div class="input-group">
-                        <label for="resumeText">Resume Text</label>
-                        <textarea id="resumeText" placeholder="Paste resume content here..." rows="12"></textarea>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="jobDescription">Job Description</label>
-                        <textarea id="jobDescription" placeholder="Paste job description here..." rows="12"></textarea>
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button id="analyzeBtn" class="btn btn-primary">Analyze Match</button>
-                        <button id="clearBtn" class="btn btn-secondary">Clear All</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="results-panel">
-                <div class="panel-header">
-                    <h2>Analysis Results</h2>
-                </div>
-                
-                <div id="resultsContainer" class="results-container">
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M9 12l2 2 4-4"></path>
-                                <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.21.45 4.55 1.23"></path>
-                            </svg>
-                        </div>
-                        <h3>Ready for Analysis</h3>
-                        <p>Enter resume and job description above, then click "Analyze Match" to see detailed compatibility results</p>
-                    </div>
-                </div>
-                
-                <div id="matchResults" class="match-results" style="display: none;">
-                    <div class="score-section">
-                        <div class="overall-score">
-                            <div class="score-circle">
-                                <div class="score-value" id="overallScore">0%</div>
-                            </div>
-                            <div class="score-label">Overall Match</div>
-                        </div>
-                        
-                        <div class="score-breakdown">
-                            <div class="score-item">
-                                <span class="score-name">Skill Match</span>
-                                <span class="score-percent" id="skillMatch">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="skills-analysis">
-                        <div class="skills-section">
-                            <h3>Matching Skills</h3>
-                            <div id="matchingSkills" class="skills-list"></div>
-                        </div>
-                        
-                        <div class="skills-section">
-                            <h3>Missing Skills</h3>
-                            <div id="missingSkills" class="skills-list"></div>
-                        </div>
-                        
-                        <div class="skills-section">
-                            <h3>Resume Skills</h3>
-                            <div id="resumeSkills" class="skills-list"></div>
-                        </div>
-                        
-                        <div class="skills-section">
-                            <h3>Job Requirements</h3>
-                            <div id="jobSkills" class="skills-list"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="container">
+    <div class="dashboard-grid">
+      <div class="input-panel">
+        <div class="panel-header">
+          <h2>Input & Analysis</h2>
+          <div class="sample-controls">
+            <select id="resumeSample" class="sample-select">
+              <option value="">Select Sample Resume</option>
+            </select>
+            <select id="jdSample" class="sample-select">
+              <option value="">Select Sample Job Description</option>
+            </select>
+          </div>
         </div>
-    </div>
-</div>
-{% endblock %}
 
-{% block scripts %}
+        <div class="input-section">
+          <div class="input-group">
+            <label for="resumeText">Resume Text</label>
+            <textarea
+              id="resumeText"
+              placeholder="Select a resume from the dropdown above or paste resume content here..."
+              rows="10"
+            ></textarea>
+          </div>
+
+          <div class="input-group">
+            <label for="jobDescription">Job Description</label>
+            <textarea
+              id="jobDescription"
+              placeholder="Select a job description from the dropdown above or paste job description here..."
+              rows="10"
+            ></textarea>
+          </div>
+
+          <div class="action-buttons">
+            <button id="analyzeBtn" class="btn btn-primary btn-large">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4"></path>
+                <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.21.45 4.55 1.23"></path>
+              </svg>
+              Analyze Match
+            </button>
+            <button id="clearBtn" class="btn btn-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              </svg>
+              Clear All
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-panel">
+        <div class="panel-header">
+          <h2>Analysis Results</h2>
+        </div>
+
+        <div id="resultsContainer" class="results-container">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <path d="M9 12l2 2 4-4"></path>
+                <path
+                  d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.21.45 4.55 1.23"
+                ></path>
+              </svg>
+            </div>
+            <h3>Ready for Analysis</h3>
+            <p>
+              Enter resume and job description above, then click "Analyze Match"
+              to see detailed compatibility results
+            </p>
+          </div>
+        </div>
+
+        <div id="matchResults" class="match-results" style="display: none">
+          <div class="score-section">
+            <div class="overall-score">
+              <div class="score-circle">
+                <div class="score-value" id="overallScore">0%</div>
+              </div>
+              <div class="score-label">Overall Match</div>
+            </div>
+
+            <div class="score-breakdown">
+              <div class="score-item">
+                <span class="score-name">Skill Match</span>
+                <span class="score-percent" id="skillMatch">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="skills-analysis">
+            <div class="skills-section">
+              <h3>Matching Skills</h3>
+              <div id="matchingSkills" class="skills-list"></div>
+            </div>
+
+            <div class="skills-section">
+              <h3>Missing Skills</h3>
+              <div id="missingSkills" class="skills-list"></div>
+            </div>
+
+            <div class="skills-section">
+              <h3>Resume Skills</h3>
+              <div id="resumeSkills" class="skills-list"></div>
+            </div>
+
+            <div class="skills-section">
+              <h3>Job Requirements</h3>
+              <div id="jobSkills" class="skills-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
     loadSampleData();
     setupEventListeners();
-});
+  });
 
-async function loadSampleData() {
+  async function loadSampleData() {
     try {
-        const response = await fetch('/api/hr/samples');
-        const result = await response.json();
-        
-        if (result.success) {
-            populateSampleSelects(result.data);
-        }
+      const response = await fetch("/api/hr/samples");
+      const result = await response.json();
+
+      if (result.success) {
+        populateSampleSelects(result.data);
+      }
     } catch (error) {
-        console.error('Error loading samples:', error);
+      console.error("Error loading samples:", error);
     }
-}
+  }
 
-function populateSampleSelects(data) {
-    const resumeSelect = document.getElementById('resumeSample');
-    const jdSelect = document.getElementById('jdSample');
-    
-    data.resumes.forEach(resume => {
-        const option = document.createElement('option');
-        option.value = resume;
-        option.textContent = resume.replace(/_/g, ' ').toUpperCase();
-        resumeSelect.appendChild(option);
-    });
-    
-    data.job_descriptions.forEach(jd => {
-        const option = document.createElement('option');
-        option.value = jd;
-        option.textContent = jd.replace(/_/g, ' ').toUpperCase();
-        jdSelect.appendChild(option);
-    });
-}
+  function populateSampleSelects(data) {
+    const resumeSelect = document.getElementById("resumeSample");
+    const jdSelect = document.getElementById("jdSample");
 
-function setupEventListeners() {
-    document.getElementById('resumeSample').addEventListener('change', function() {
-        if (this.value) loadSample('resume', this.value);
-    });
-    
-    document.getElementById('jdSample').addEventListener('change', function() {
-        if (this.value) loadSample('job_description', this.value);
-    });
-    
-    document.getElementById('analyzeBtn').addEventListener('click', analyzeMatch);
-    document.getElementById('clearBtn').addEventListener('click', clearInputs);
-}
+    // Clear existing options except the first one
+    resumeSelect.innerHTML = '<option value="">Select Sample Resume</option>';
+    jdSelect.innerHTML =
+      '<option value="">Select Sample Job Description</option>';
 
-async function loadSample(type, name) {
+    // Populate resume options with database data
+    data.resumes.forEach((resume) => {
+      const option = document.createElement("option");
+      option.value = resume.id; // Use ID for database lookup
+      option.textContent = resume.name; // Display formatted name
+      resumeSelect.appendChild(option);
+    });
+
+    // Populate job description options with database data
+    data.job_descriptions.forEach((jd) => {
+      const option = document.createElement("option");
+      option.value = jd.id; // Use ID for database lookup
+      option.textContent = jd.name; // Display formatted name
+      jdSelect.appendChild(option);
+    });
+  }
+
+  function setupEventListeners() {
+    document
+      .getElementById("resumeSample")
+      .addEventListener("change", function () {
+        if (this.value) loadSample("resume", this.value);
+      });
+
+    document.getElementById("jdSample").addEventListener("change", function () {
+      if (this.value) loadSample("job_description", this.value);
+    });
+
+    document
+      .getElementById("analyzeBtn")
+      .addEventListener("click", analyzeMatch);
+    document.getElementById("clearBtn").addEventListener("click", clearInputs);
+  }
+
+  async function loadSample(type, id) {
     try {
-        const response = await fetch(`/api/hr/sample/${type}/${name}`);
-        const result = await response.json();
-        
-        if (result.success) {
-            if (type === 'resume') {
-                document.getElementById('resumeText').value = result.data.content;
-            } else {
-                document.getElementById('jobDescription').value = result.data.content;
-            }
-        }
-    } catch (error) {
-        console.error('Error loading sample:', error);
-    }
-}
+      const response = await fetch(`/api/hr/sample/${type}/${id}`);
+      const result = await response.json();
 
-async function analyzeMatch() {
-    const resumeText = document.getElementById('resumeText').value;
-    const jobDescription = document.getElementById('jobDescription').value;
-    
-    if (!resumeText.trim() || !jobDescription.trim()) {
-        showNotification('Please provide both resume and job description', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    try {
-        const response = await fetch('/api/hr/match', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                resume: resumeText,
-                job_description: jobDescription
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            displayResults(result.data);
-            showNotification('Analysis completed successfully', 'success');
+      if (result.success) {
+        if (type === "resume") {
+          document.getElementById("resumeText").value = result.data.content;
         } else {
-            showNotification(result.message || 'Analysis failed', 'error');
+          document.getElementById("jobDescription").value = result.data.content;
         }
+      } else {
+        showNotification(result.message || "Error loading sample", "error");
+      }
     } catch (error) {
-        console.error('Error analyzing match:', error);
-        showNotification('Error analyzing match', 'error');
+      console.error("Error loading sample:", error);
+      showNotification("Error loading sample content", "error");
+    }
+  }
+
+  async function analyzeMatch() {
+    const resumeText = document.getElementById("resumeText").value;
+    const jobDescription = document.getElementById("jobDescription").value;
+
+    if (!resumeText.trim() || !jobDescription.trim()) {
+      showNotification(
+        "Please provide both resume and job description",
+        "error"
+      );
+      return;
+    }
+
+    showLoading(true);
+
+    try {
+      const response = await fetch("/api/hr/match", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          resume: resumeText,
+          job_description: jobDescription,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        displayResults(result.data);
+        showNotification("Analysis completed successfully", "success");
+      } else {
+        showNotification(result.message || "Analysis failed", "error");
+      }
+    } catch (error) {
+      console.error("Error analyzing match:", error);
+      showNotification("Error analyzing match", "error");
     } finally {
-        showLoading(false);
+      showLoading(false);
     }
-}
+  }
 
-function displayResults(data) {
-    document.getElementById('resultsContainer').style.display = 'none';
-    document.getElementById('matchResults').style.display = 'block';
-    
-    document.getElementById('overallScore').textContent = data.match_score + '%';
-    document.getElementById('skillMatch').textContent = data.skill_match_percentage + '%';
-    
-    const scoreCircle = document.querySelector('.score-circle');
-    scoreCircle.style.setProperty('--score', data.match_score);
-    
-    displaySkills('matchingSkills', data.matching_skills, 'skill-match');
-    displaySkills('missingSkills', data.missing_skills, 'skill-missing');
-    displaySkills('resumeSkills', data.resume_skills, 'skill-neutral');
-    displaySkills('jobSkills', data.jd_skills, 'skill-neutral');
-}
+  function displayResults(data) {
+    document.getElementById("resultsContainer").style.display = "none";
+    document.getElementById("matchResults").style.display = "block";
 
-function displaySkills(containerId, skills, className) {
+    document.getElementById("overallScore").textContent =
+      data.match_score + "%";
+    document.getElementById("skillMatch").textContent =
+      data.skill_match_percentage + "%";
+
+    const scoreCircle = document.querySelector(".score-circle");
+    scoreCircle.style.setProperty("--score", data.match_score);
+
+    displaySkills("matchingSkills", data.matching_skills, "skill-match");
+    displaySkills("missingSkills", data.missing_skills, "skill-missing");
+    displaySkills("resumeSkills", data.resume_skills, "skill-neutral");
+    displaySkills("jobSkills", data.jd_skills, "skill-neutral");
+  }
+
+  function displaySkills(containerId, skills, className) {
     const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    
-    if (skills.length === 0) {
-        container.innerHTML = '<div class="no-skills">No skills found</div>';
-        return;
-    }
-    
-    skills.forEach(skill => {
-        const skillElement = document.createElement('span');
-        skillElement.className = `skill-tag ${className}`;
-        skillElement.textContent = skill;
-        container.appendChild(skillElement);
-    });
-}
+    container.innerHTML = "";
 
-function clearInputs() {
-    document.getElementById('resumeText').value = '';
-    document.getElementById('jobDescription').value = '';
-    document.getElementById('resumeSample').selectedIndex = 0;
-    document.getElementById('jdSample').selectedIndex = 0;
-    document.getElementById('resultsContainer').style.display = 'block';
-    document.getElementById('matchResults').style.display = 'none';
-}
+    if (skills.length === 0) {
+      container.innerHTML = '<div class="no-skills">No skills found</div>';
+      return;
+    }
+
+    skills.forEach((skill) => {
+      const skillElement = document.createElement("span");
+      skillElement.className = `skill-tag ${className}`;
+      skillElement.textContent = skill;
+      container.appendChild(skillElement);
+    });
+  }
+
+  function clearInputs() {
+    document.getElementById("resumeText").value = "";
+    document.getElementById("jobDescription").value = "";
+    document.getElementById("resumeSample").selectedIndex = 0;
+    document.getElementById("jdSample").selectedIndex = 0;
+    document.getElementById("resultsContainer").style.display = "block";
+    document.getElementById("matchResults").style.display = "none";
+  }
+
+  function showNotification(message, type) {
+    // Simple notification - you can enhance this with a proper notification system
+    if (type === "error") {
+      alert("Error: " + message);
+    } else {
+      console.log(type + ": " + message);
+    }
+  }
+
+  function showLoading(show) {
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    if (show) {
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = "Analyzing...";
+    } else {
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = "Analyze Match";
+    }
+  }
 </script>
 {% endblock %}

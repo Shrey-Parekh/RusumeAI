@@ -5,7 +5,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 try:
     from hr.matching_engine import ResumeMatcher
-    from hr.sample_data import SAMPLE_RESUMES, SAMPLE_JOB_DESCRIPTIONS
     from .db_manager import DatabaseManager
 except ImportError as e:
     print(f"Error importing HR modules: {e}")
@@ -17,6 +16,66 @@ class HRIntegration:
     def __init__(self):
         self.matcher = ResumeMatcher()
         self.db_manager = DatabaseManager()
+    
+    def get_resumes_from_db(self):
+        """Fetch all resumes from database"""
+        try:
+            if self.db_manager.connect():
+                cursor = self.db_manager.connection.cursor(dictionary=True)
+                cursor.execute("SELECT resume_id, resume_title, candidate_name, candidate_email FROM resumes ORDER BY uploaded_at DESC")
+                resumes = cursor.fetchall()
+                cursor.close()
+                self.db_manager.disconnect()
+                return resumes
+            return []
+        except Exception as e:
+            print(f"Error fetching resumes: {e}")
+            return []
+    
+    def get_job_descriptions_from_db(self):
+        """Fetch all job descriptions from database"""
+        try:
+            if self.db_manager.connect():
+                cursor = self.db_manager.connection.cursor(dictionary=True)
+                cursor.execute("SELECT job_id, job_title, company_name FROM job_descriptions WHERE status = 'active' ORDER BY posted_at DESC")
+                job_descriptions = cursor.fetchall()
+                cursor.close()
+                self.db_manager.disconnect()
+                return job_descriptions
+            return []
+        except Exception as e:
+            print(f"Error fetching job descriptions: {e}")
+            return []
+    
+    def get_resume_by_id(self, resume_id):
+        """Fetch specific resume by ID"""
+        try:
+            if self.db_manager.connect():
+                cursor = self.db_manager.connection.cursor(dictionary=True)
+                cursor.execute("SELECT * FROM resumes WHERE resume_id = %s", (resume_id,))
+                resume = cursor.fetchone()
+                cursor.close()
+                self.db_manager.disconnect()
+                return resume
+            return None
+        except Exception as e:
+            print(f"Error fetching resume: {e}")
+            return None
+    
+    def get_job_description_by_id(self, job_id):
+        """Fetch specific job description by ID"""
+        try:
+            if self.db_manager.connect():
+                cursor = self.db_manager.connection.cursor(dictionary=True)
+                cursor.execute("SELECT * FROM job_descriptions WHERE job_id = %s", (job_id,))
+                job_description = cursor.fetchone()
+                cursor.close()
+                self.db_manager.disconnect()
+                return job_description
+            return None
+        except Exception as e:
+            print(f"Error fetching job description: {e}")
+            return None
 
     def analyze_match(self, resume_text, job_description):
         try:
@@ -81,30 +140,101 @@ class HRIntegration:
             }
 
     def get_sample_data(self):
+        """Get list of resumes and job descriptions from database instead of sample data"""
         try:
+            resumes = self.get_resumes_from_db()
+            job_descriptions = self.get_job_descriptions_from_db()
+            
+            # Format resume list for dropdown
+            resume_list = []
+            for resume in resumes:
+                resume_list.append({
+                    'id': resume['resume_id'],
+                    'name': f"{resume['resume_title']} - {resume['candidate_name']}"
+                })
+            
+            # Format job description list for dropdown
+            job_list = []
+            for job in job_descriptions:
+                job_list.append({
+                    'id': job['job_id'],
+                    'name': f"{job['job_title']} - {job['company_name']}"
+                })
+            
             return {
                 'success': True,
-                'message': 'Sample data retrieved successfully',
+                'message': 'Data retrieved successfully from database',
                 'data': {
-                    'resumes': list(SAMPLE_RESUMES.keys()),
-                    'job_descriptions': list(SAMPLE_JOB_DESCRIPTIONS.keys())
+                    'resumes': resume_list,
+                    'job_descriptions': job_list
                 },
                 'errors': []
             }
         except Exception as e:
             return {
                 'success': False,
-                'message': 'Error retrieving sample data',
+                'message': 'Error retrieving data from database',
                 'data': None,
                 'errors': [str(e)]
             }
 
     def get_sample_content(self, sample_type, name):
+        """Get resume or job description content from database by ID"""
         try:
             if sample_type == 'resume':
-                content = SAMPLE_RESUMES.get(name, '')
+                # Name is actually the resume_id
+                try:
+                    resume_id = int(name)
+                    resume = self.get_resume_by_id(resume_id)
+                    
+                    if resume:
+                        return {
+                            'success': True,
+                            'message': 'Resume retrieved successfully from database',
+                            'data': {'content': resume['resume_text']},
+                            'errors': []
+                        }
+                    else:
+                        return {
+                            'success': False,
+                            'message': 'Resume not found',
+                            'data': None,
+                            'errors': [f'Resume with ID {resume_id} not found']
+                        }
+                except ValueError:
+                    return {
+                        'success': False,
+                        'message': 'Invalid resume ID',
+                        'data': None,
+                        'errors': ['Resume ID must be a number']
+                    }
             elif sample_type == 'job_description':
-                content = SAMPLE_JOB_DESCRIPTIONS.get(name, '')
+                # Name is actually the job_id
+                try:
+                    job_id = int(name)
+                    job_description = self.get_job_description_by_id(job_id)
+                    
+                    if job_description:
+                        return {
+                            'success': True,
+                            'message': 'Job description retrieved successfully from database',
+                            'data': {'content': job_description['job_description_text']},
+                            'errors': []
+                        }
+                    else:
+                        return {
+                            'success': False,
+                            'message': 'Job description not found',
+                            'data': None,
+                            'errors': [f'Job description with ID {job_id} not found']
+                        }
+                except ValueError:
+                    return {
+                        'success': False,
+                        'message': 'Invalid job description ID',
+                        'data': None,
+                        'errors': ['Job description ID must be a number']
+                    }
             else:
                 return {
                     'success': False,
@@ -112,25 +242,10 @@ class HRIntegration:
                     'data': None,
                     'errors': ['Sample type must be "resume" or "job_description"']
                 }
-
-            if not content:
-                return {
-                    'success': False,
-                    'message': 'Sample not found',
-                    'data': None,
-                    'errors': [f'Sample "{name}" not found']
-                }
-
-            return {
-                'success': True,
-                'message': 'Sample content retrieved successfully',
-                'data': {'content': content},
-                'errors': []
-            }
         except Exception as e:
             return {
                 'success': False,
-                'message': 'Error retrieving sample content',
+                'message': 'Error retrieving content from database',
                 'data': None,
                 'errors': [str(e)]
             }
