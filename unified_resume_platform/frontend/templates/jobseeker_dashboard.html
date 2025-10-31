@@ -1,768 +1,837 @@
-{% extends "base.html" %}
-
-{% block title %}Job Seeker Tools - Unified Resume Platform{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Job Seeker Tools - Unified Resume
+Platform{% endblock %} {% block content %}
 <div class="dashboard-header">
-    <div class="container">
-        <h1>Job Seeker Tools</h1>
-        <p>Create profiles, analyze jobs, and generate tailored resumes</p>
-    </div>
+  <div class="container">
+    <h1>Job Seeker Tools</h1>
+    <p>Create profiles, analyze jobs, and generate tailored resumes</p>
+  </div>
 </div>
 
 <div class="dashboard-content">
-    <div class="container">
-        <div class="tabs-container">
-            <div class="tabs-nav">
-                <button class="tab-btn active" data-tab="profile">Profile Management</button>
-                <button class="tab-btn" data-tab="analysis">Job Analysis</button>
-                <button class="tab-btn" data-tab="resume">Resume Generation</button>
-            </div>
-            
-            <div class="tab-content active" id="profile-tab">
-                <div class="profile-section">
-                    <div class="section-header">
-                        <h2>Professional Profile</h2>
-                        <div class="profile-actions">
-                            <button id="validateProfileBtn" class="btn btn-secondary">Validate</button>
-                            <button id="saveProfileBtn" class="btn btn-primary">Save Profile</button>
-                        </div>
-                    </div>
-                    
-                    <form id="profileForm" class="profile-form">
-                        <div class="form-section">
-                            <h3>Personal Information</h3>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="name">Full Name *</label>
-                                    <input type="text" id="name" name="name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email *</label>
-                                    <input type="email" id="email" name="email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">Phone</label>
-                                    <input type="tel" id="phone" name="phone">
-                                </div>
-                                <div class="form-group">
-                                    <label for="linkedin">LinkedIn</label>
-                                    <input type="url" id="linkedin" name="linkedin">
-                                </div>
-                                <div class="form-group full-width">
-                                    <label for="address">Address</label>
-                                    <input type="text" id="address" name="address">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-section">
-                            <h3>Professional Summary</h3>
-                            <div class="form-group">
-                                <textarea id="summary" name="summary" rows="4" placeholder="Brief professional summary..."></textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="form-section">
-                            <div class="section-header">
-                                <h3>Work Experience</h3>
-                                <button type="button" id="addExperienceBtn" class="btn btn-small">Add Experience</button>
-                            </div>
-                            <div id="experienceContainer" class="dynamic-container"></div>
-                        </div>
-                        
-                        <div class="form-section">
-                            <div class="section-header">
-                                <h3>Education</h3>
-                                <button type="button" id="addEducationBtn" class="btn btn-small">Add Education</button>
-                            </div>
-                            <div id="educationContainer" class="dynamic-container"></div>
-                        </div>
-                        
-                        <div class="form-section">
-                            <h3>Skills</h3>
-                            <div class="skills-grid">
-                                <div class="form-group">
-                                    <label for="technicalSkills">Technical Skills</label>
-                                    <textarea id="technicalSkills" name="technicalSkills" rows="3" placeholder="Comma-separated skills..."></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="softSkills">Soft Skills</label>
-                                    <textarea id="softSkills" name="softSkills" rows="3" placeholder="Comma-separated skills..."></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="languages">Languages</label>
-                                    <textarea id="languages" name="languages" rows="3" placeholder="Comma-separated languages..."></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="certifications">Certifications</label>
-                                    <textarea id="certifications" name="certifications" rows="3" placeholder="Comma-separated certifications..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-section">
-                            <div class="section-header">
-                                <h3>Projects</h3>
-                                <button type="button" id="addProjectBtn" class="btn btn-small">Add Project</button>
-                            </div>
-                            <div id="projectsContainer" class="dynamic-container"></div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="analysis-tab">
-                <div class="analysis-section">
-                    <div class="section-header">
-                        <h2>Job Description Analysis</h2>
-                    </div>
-                    
-                    <div class="analysis-input">
-                        <div class="form-group">
-                            <label for="jobDescriptionText">Job Description</label>
-                            <textarea id="jobDescriptionText" rows="15" placeholder="Paste job description here..."></textarea>
-                        </div>
-                        <div class="action-buttons">
-                            <button id="analyzeJobBtn" class="btn btn-primary">Analyze Job</button>
-                            <button id="clearAnalysisBtn" class="btn btn-secondary">Clear</button>
-                        </div>
-                    </div>
-                    
-                    <div id="analysisResults" class="analysis-results" style="display: none;">
-                        <div class="results-grid">
-                            <div class="result-card">
-                                <h3>Relevance Score</h3>
-                                <div class="score-display">
-                                    <div class="score-circle small">
-                                        <span id="relevanceScore">0%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="result-card">
-                                <h3>Top Keywords</h3>
-                                <div id="topKeywords" class="keywords-list"></div>
-                            </div>
-                            
-                            <div class="result-card">
-                                <h3>Required Skills</h3>
-                                <div id="requiredSkills" class="skills-list"></div>
-                            </div>
-                            
-                            <div class="result-card">
-                                <h3>Preferred Skills</h3>
-                                <div id="preferredSkills" class="skills-list"></div>
-                            </div>
-                            
-                            <div class="result-card">
-                                <h3>Experience Level</h3>
-                                <div id="experienceLevel" class="info-text"></div>
-                            </div>
-                            
-                            <div class="result-card">
-                                <h3>Education Requirements</h3>
-                                <div id="educationReqs" class="info-text"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="generate-section">
-                            <button id="generateResumeBtn" class="btn btn-primary btn-large">Generate Tailored Resume</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="resume-tab">
-                <div class="resume-section">
-                    <div class="section-header">
-                        <h2>Resume Preview & Export</h2>
-                        <div class="export-actions">
-                            <button id="exportPdfBtn" class="btn btn-secondary">Export PDF</button>
-                            <button id="exportDocxBtn" class="btn btn-secondary">Export Word</button>
-                            <button id="exportTxtBtn" class="btn btn-secondary">Export Text</button>
-                        </div>
-                    </div>
-                    
-                    <div id="resumePreview" class="resume-preview">
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14,2 14,8 20,8"></polyline>
-                                </svg>
-                            </div>
-                            <h3>No Resume Generated</h3>
-                            <p>Analyze a job description first, then generate a tailored resume</p>
-                        </div>
-                    </div>
-                    
-                    <div id="resumeContent" class="resume-content" style="display: none;">
-                        <pre id="resumeText"></pre>
-                    </div>
-                </div>
-            </div>
-            
+  <div class="container">
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="profile">
+          Profile Management
+        </button>
+        <button class="tab-btn" data-tab="analysis">Job Analysis</button>
+        <button class="tab-btn" data-tab="resume">Resume Generation</button>
+      </div>
 
+      <div class="tab-content active" id="profile-tab">
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>Professional Profile</h2>
+            <div class="profile-actions">
+              <button id="validateProfileBtn" class="btn btn-secondary">
+                Validate
+              </button>
+              <button id="saveProfileBtn" class="btn btn-primary">
+                Save Profile
+              </button>
+            </div>
+          </div>
+
+          <form id="profileForm" class="profile-form">
+            <div class="form-section">
+              <h3>Personal Information</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="name">Full Name *</label>
+                  <input type="text" id="name" name="name" required />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email *</label>
+                  <input type="email" id="email" name="email" required />
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone</label>
+                  <input type="tel" id="phone" name="phone" />
+                </div>
+                <div class="form-group">
+                  <label for="linkedin">LinkedIn</label>
+                  <input type="url" id="linkedin" name="linkedin" />
+                </div>
+                <div class="form-group full-width">
+                  <label for="address">Address</label>
+                  <input type="text" id="address" name="address" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Professional Summary</h3>
+              <div class="form-group">
+                <textarea
+                  id="summary"
+                  name="summary"
+                  rows="4"
+                  placeholder="Brief professional summary..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="section-header">
+                <h3>Work Experience</h3>
+                <button
+                  type="button"
+                  id="addExperienceBtn"
+                  class="btn btn-small"
+                >
+                  Add Experience
+                </button>
+              </div>
+              <div id="experienceContainer" class="dynamic-container"></div>
+            </div>
+
+            <div class="form-section">
+              <div class="section-header">
+                <h3>Education</h3>
+                <button
+                  type="button"
+                  id="addEducationBtn"
+                  class="btn btn-small"
+                >
+                  Add Education
+                </button>
+              </div>
+              <div id="educationContainer" class="dynamic-container"></div>
+            </div>
+
+            <div class="form-section">
+              <h3>Skills</h3>
+              <div class="skills-grid">
+                <div class="form-group">
+                  <label for="technicalSkills">Technical Skills</label>
+                  <textarea
+                    id="technicalSkills"
+                    name="technicalSkills"
+                    rows="3"
+                    placeholder="Comma-separated skills..."
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="softSkills">Soft Skills</label>
+                  <textarea
+                    id="softSkills"
+                    name="softSkills"
+                    rows="3"
+                    placeholder="Comma-separated skills..."
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="languages">Languages</label>
+                  <textarea
+                    id="languages"
+                    name="languages"
+                    rows="3"
+                    placeholder="Comma-separated languages..."
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="certifications">Certifications</label>
+                  <textarea
+                    id="certifications"
+                    name="certifications"
+                    rows="3"
+                    placeholder="Comma-separated certifications..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="section-header">
+                <h3>Projects</h3>
+                <button type="button" id="addProjectBtn" class="btn btn-small">
+                  Add Project
+                </button>
+              </div>
+              <div id="projectsContainer" class="dynamic-container"></div>
+            </div>
+          </form>
         </div>
+      </div>
+
+      <div class="tab-content" id="analysis-tab">
+        <div class="analysis-section">
+          <div class="section-header">
+            <h2>Job Description Analysis</h2>
+          </div>
+
+          <div class="analysis-input">
+            <div class="form-group">
+              <label for="jobDescriptionText">Job Description</label>
+              <textarea
+                id="jobDescriptionText"
+                rows="15"
+                placeholder="Paste job description here..."
+              ></textarea>
+            </div>
+            <div class="action-buttons">
+              <button id="analyzeJobBtn" class="btn btn-primary">
+                Analyze Job
+              </button>
+              <button id="clearAnalysisBtn" class="btn btn-secondary">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="analysisResults"
+            class="analysis-results"
+            style="display: none"
+          >
+            <div class="results-grid">
+              <div class="result-card">
+                <h3>Relevance Score</h3>
+                <div class="score-display">
+                  <div class="score-circle small">
+                    <span id="relevanceScore">0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="result-card">
+                <h3>Top Keywords</h3>
+                <div id="topKeywords" class="keywords-list"></div>
+              </div>
+
+              <div class="result-card">
+                <h3>Required Skills</h3>
+                <div id="requiredSkills" class="skills-list"></div>
+              </div>
+
+              <div class="result-card">
+                <h3>Preferred Skills</h3>
+                <div id="preferredSkills" class="skills-list"></div>
+              </div>
+
+              <div class="result-card">
+                <h3>Experience Level</h3>
+                <div id="experienceLevel" class="info-text"></div>
+              </div>
+
+              <div class="result-card">
+                <h3>Education Requirements</h3>
+                <div id="educationReqs" class="info-text"></div>
+              </div>
+            </div>
+
+            <div class="generate-section">
+              <button id="generateResumeBtn" class="btn btn-primary btn-large">
+                Generate Tailored Resume
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="resume-tab">
+        <div class="resume-section">
+          <div class="section-header">
+            <h2>Resume Preview & Export</h2>
+            <div class="export-actions">
+              <button id="exportPdfBtn" class="btn btn-secondary">
+                Export PDF
+              </button>
+              <button id="exportDocxBtn" class="btn btn-secondary">
+                Export Word
+              </button>
+              <button id="exportTxtBtn" class="btn btn-secondary">
+                Export Text
+              </button>
+            </div>
+          </div>
+
+          <div id="resumePreview" class="resume-preview">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg
+                  width="64"
+                  height="64"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path
+                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                  ></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                </svg>
+              </div>
+              <h3>No Resume Generated</h3>
+              <p>
+                Analyze a job description first, then generate a tailored resume
+              </p>
+            </div>
+          </div>
+
+          <div id="resumeContent" class="resume-content" style="display: none">
+            <pre id="resumeText"></pre>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
-let currentProfile = {{ profile | tojson if profile else 'null' }};
-let currentAnalysis = null;
-let currentResume = null;
+  let currentProfile = {{ profile | tojson if profile else 'null' }};
+  let currentAnalysis = null;
+  let currentResume = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    setupTabs();
-    setupEventListeners();
-    if (currentProfile) {
-        populateProfileForm(currentProfile);
-    }
-    addInitialFormSections();
-});
+  document.addEventListener('DOMContentLoaded', function() {
+      setupTabs();
+      setupEventListeners();
+      if (currentProfile) {
+          populateProfileForm(currentProfile);
+      }
+      addInitialFormSections();
+  });
 
-function setupTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tabId = this.dataset.tab;
-            
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            
-            this.classList.add('active');
-            document.getElementById(tabId + '-tab').classList.add('active');
-        });
-    });
-}
+  function setupTabs() {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
 
-function setupEventListeners() {
-    document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
-    document.getElementById('validateProfileBtn').addEventListener('click', validateProfile);
-    document.getElementById('analyzeJobBtn').addEventListener('click', analyzeJob);
-    document.getElementById('clearAnalysisBtn').addEventListener('click', clearAnalysis);
-    document.getElementById('generateResumeBtn').addEventListener('click', generateResume);
-    document.getElementById('exportPdfBtn').addEventListener('click', () => exportResume('pdf'));
-    document.getElementById('exportDocxBtn').addEventListener('click', () => exportResume('docx'));
-    document.getElementById('exportTxtBtn').addEventListener('click', () => exportResume('txt'));
-    
-    document.getElementById('addExperienceBtn').addEventListener('click', addExperienceSection);
-    document.getElementById('addEducationBtn').addEventListener('click', addEducationSection);
-    document.getElementById('addProjectBtn').addEventListener('click', addProjectSection);
-}
+      tabBtns.forEach(btn => {
+          btn.addEventListener('click', function() {
+              const tabId = this.dataset.tab;
 
-function addInitialFormSections() {
-    if (!currentProfile || !currentProfile.work_experience || currentProfile.work_experience.length === 0) {
-        addExperienceSection();
-    }
-    if (!currentProfile || !currentProfile.education || currentProfile.education.length === 0) {
-        addEducationSection();
-    }
-}
+              tabBtns.forEach(b => b.classList.remove('active'));
+              tabContents.forEach(c => c.classList.remove('active'));
 
-function addExperienceSection(data = null) {
-    const container = document.getElementById('experienceContainer');
-    const index = container.children.length;
-    
-    const section = document.createElement('div');
-    section.className = 'dynamic-section';
-    section.innerHTML = `
-        <div class="section-header">
-            <h4>Experience ${index + 1}</h4>
-            <button type="button" class="btn btn-small btn-danger" onclick="removeSection(this)">Remove</button>
-        </div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Company *</label>
-                <input type="text" name="experience_company_${index}" value="${data?.company || ''}" required>
-            </div>
-            <div class="form-group">
-                <label>Position *</label>
-                <input type="text" name="experience_position_${index}" value="${data?.position || ''}" required>
-            </div>
-            <div class="form-group">
-                <label>Start Date *</label>
-                <input type="text" name="experience_start_${index}" value="${data?.start_date || ''}" placeholder="YYYY-MM" required>
-            </div>
-            <div class="form-group">
-                <label>End Date</label>
-                <input type="text" name="experience_end_${index}" value="${data?.end_date || ''}" placeholder="YYYY-MM or Present">
-            </div>
-            <div class="form-group full-width">
-                <label>Description</label>
-                <textarea name="experience_desc_${index}" rows="3">${data?.description || ''}</textarea>
-            </div>
-            <div class="form-group full-width">
-                <label>Achievements (one per line)</label>
-                <textarea name="experience_achievements_${index}" rows="3">${data?.achievements ? data.achievements.join('\n') : ''}</textarea>
-            </div>
-        </div>
-    `;
-    
-    container.appendChild(section);
-}
+              this.classList.add('active');
+              document.getElementById(tabId + '-tab').classList.add('active');
+          });
+      });
+  }
 
-function addEducationSection(data = null) {
-    const container = document.getElementById('educationContainer');
-    const index = container.children.length;
-    
-    const section = document.createElement('div');
-    section.className = 'dynamic-section';
-    section.innerHTML = `
-        <div class="section-header">
-            <h4>Education ${index + 1}</h4>
-            <button type="button" class="btn btn-small btn-danger" onclick="removeSection(this)">Remove</button>
-        </div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Institution *</label>
-                <input type="text" name="education_institution_${index}" value="${data?.institution || ''}" required>
-            </div>
-            <div class="form-group">
-                <label>Degree *</label>
-                <input type="text" name="education_degree_${index}" value="${data?.degree || ''}" required>
-            </div>
-            <div class="form-group">
-                <label>Field of Study</label>
-                <input type="text" name="education_field_${index}" value="${data?.field || ''}">
-            </div>
-            <div class="form-group">
-                <label>Graduation Date</label>
-                <input type="text" name="education_graduation_${index}" value="${data?.graduation_date || ''}" placeholder="YYYY-MM">
-            </div>
-            <div class="form-group">
-                <label>GPA</label>
-                <input type="number" step="0.1" min="0" max="4" name="education_gpa_${index}" value="${data?.gpa || ''}">
-            </div>
-        </div>
-    `;
-    
-    container.appendChild(section);
-}
+  function setupEventListeners() {
+      document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+      document.getElementById('validateProfileBtn').addEventListener('click', validateProfile);
+      document.getElementById('analyzeJobBtn').addEventListener('click', analyzeJob);
+      document.getElementById('clearAnalysisBtn').addEventListener('click', clearAnalysis);
+      document.getElementById('generateResumeBtn').addEventListener('click', generateResume);
+      document.getElementById('exportPdfBtn').addEventListener('click', () => exportResume('pdf'));
+      document.getElementById('exportDocxBtn').addEventListener('click', () => exportResume('docx'));
+      document.getElementById('exportTxtBtn').addEventListener('click', () => exportResume('txt'));
 
-function addProjectSection(data = null) {
-    const container = document.getElementById('projectsContainer');
-    const index = container.children.length;
-    
-    const section = document.createElement('div');
-    section.className = 'dynamic-section';
-    section.innerHTML = `
-        <div class="section-header">
-            <h4>Project ${index + 1}</h4>
-            <button type="button" class="btn btn-small btn-danger" onclick="removeSection(this)">Remove</button>
-        </div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Project Name</label>
-                <input type="text" name="project_name_${index}" value="${data?.name || ''}">
-            </div>
-            <div class="form-group">
-                <label>URL</label>
-                <input type="url" name="project_url_${index}" value="${data?.url || ''}">
-            </div>
-            <div class="form-group full-width">
-                <label>Description</label>
-                <textarea name="project_description_${index}" rows="3">${data?.description || ''}</textarea>
-            </div>
-            <div class="form-group full-width">
-                <label>Technologies (comma-separated)</label>
-                <input type="text" name="project_technologies_${index}" value="${data?.technologies ? data.technologies.join(', ') : ''}">
-            </div>
-        </div>
-    `;
-    
-    container.appendChild(section);
-}
+      document.getElementById('addExperienceBtn').addEventListener('click', addExperienceSection);
+      document.getElementById('addEducationBtn').addEventListener('click', addEducationSection);
+      document.getElementById('addProjectBtn').addEventListener('click', addProjectSection);
+  }
 
-function removeSection(button) {
-    button.closest('.dynamic-section').remove();
-}
+  function addInitialFormSections() {
+      if (!currentProfile || !currentProfile.work_experience || currentProfile.work_experience.length === 0) {
+          addExperienceSection();
+      }
+      if (!currentProfile || !currentProfile.education || currentProfile.education.length === 0) {
+          addEducationSection();
+      }
+  }
 
-function populateProfileForm(profile) {
-    if (profile.personal_info) {
-        document.getElementById('name').value = profile.personal_info.name || '';
-        document.getElementById('email').value = profile.personal_info.email || '';
-        document.getElementById('phone').value = profile.personal_info.phone || '';
-        document.getElementById('linkedin').value = profile.personal_info.linkedin || '';
-        document.getElementById('address').value = profile.personal_info.address || '';
-    }
-    
-    document.getElementById('summary').value = profile.summary || '';
-    
-    if (profile.skills) {
-        document.getElementById('technicalSkills').value = profile.skills.technical ? profile.skills.technical.join(', ') : '';
-        document.getElementById('softSkills').value = profile.skills.soft ? profile.skills.soft.join(', ') : '';
-        document.getElementById('languages').value = profile.skills.languages ? profile.skills.languages.join(', ') : '';
-        document.getElementById('certifications').value = profile.skills.certifications ? profile.skills.certifications.join(', ') : '';
-    }
-    
-    if (profile.work_experience) {
-        profile.work_experience.forEach(exp => addExperienceSection(exp));
-    }
-    
-    if (profile.education) {
-        profile.education.forEach(edu => addEducationSection(edu));
-    }
-    
-    if (profile.projects) {
-        profile.projects.forEach(proj => addProjectSection(proj));
-    }
-}
+  function addExperienceSection(data = null) {
+      const container = document.getElementById('experienceContainer');
+      const index = container.children.length;
 
-function collectProfileData() {
-    const formData = new FormData(document.getElementById('profileForm'));
-    
-    const profile = {
-        personal_info: {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            linkedin: formData.get('linkedin'),
-            address: formData.get('address')
-        },
-        summary: formData.get('summary'),
-        work_experience: [],
-        education: [],
-        skills: {
-            technical: formData.get('technicalSkills') ? formData.get('technicalSkills').split(',').map(s => s.trim()).filter(s => s) : [],
-            soft: formData.get('softSkills') ? formData.get('softSkills').split(',').map(s => s.trim()).filter(s => s) : [],
-            languages: formData.get('languages') ? formData.get('languages').split(',').map(s => s.trim()).filter(s => s) : [],
-            certifications: formData.get('certifications') ? formData.get('certifications').split(',').map(s => s.trim()).filter(s => s) : []
-        },
-        projects: []
-    };
-    
-    const experienceContainer = document.getElementById('experienceContainer');
-    Array.from(experienceContainer.children).forEach((section, index) => {
-        const company = formData.get(`experience_company_${index}`);
-        const position = formData.get(`experience_position_${index}`);
-        if (company && position) {
-            const achievements = formData.get(`experience_achievements_${index}`);
-            profile.work_experience.push({
-                company: company,
-                position: position,
-                start_date: formData.get(`experience_start_${index}`),
-                end_date: formData.get(`experience_end_${index}`),
-                description: formData.get(`experience_desc_${index}`),
-                achievements: achievements ? achievements.split('\n').map(a => a.trim()).filter(a => a) : []
-            });
-        }
-    });
-    
-    const educationContainer = document.getElementById('educationContainer');
-    Array.from(educationContainer.children).forEach((section, index) => {
-        const institution = formData.get(`education_institution_${index}`);
-        const degree = formData.get(`education_degree_${index}`);
-        if (institution && degree) {
-            const gpa = formData.get(`education_gpa_${index}`);
-            profile.education.push({
-                institution: institution,
-                degree: degree,
-                field: formData.get(`education_field_${index}`),
-                graduation_date: formData.get(`education_graduation_${index}`),
-                gpa: gpa ? parseFloat(gpa) : null
-            });
-        }
-    });
-    
-    const projectsContainer = document.getElementById('projectsContainer');
-    Array.from(projectsContainer.children).forEach((section, index) => {
-        const name = formData.get(`project_name_${index}`);
-        if (name) {
-            const technologies = formData.get(`project_technologies_${index}`);
-            profile.projects.push({
-                name: name,
-                description: formData.get(`project_description_${index}`),
-                url: formData.get(`project_url_${index}`),
-                technologies: technologies ? technologies.split(',').map(t => t.trim()).filter(t => t) : []
-            });
-        }
-    });
-    
-    return profile;
-}
+      const section = document.createElement('div');
+      section.className = 'dynamic-section';
+      section.innerHTML = `
+          <div class="section-header">
+              <h4>Experience ${index + 1}</h4>
+              <button type="button" class="btn btn-small btn-danger" onclick="removeSection(this)">Remove</button>
+          </div>
+          <div class="form-grid">
+              <div class="form-group">
+                  <label>Company *</label>
+                  <input type="text" name="experience_company_${index}" value="${data?.company || ''}" required>
+              </div>
+              <div class="form-group">
+                  <label>Position *</label>
+                  <input type="text" name="experience_position_${index}" value="${data?.position || ''}" required>
+              </div>
+              <div class="form-group">
+                  <label>Start Date *</label>
+                  <input type="text" name="experience_start_${index}" value="${data?.start_date || ''}" placeholder="YYYY-MM" required>
+              </div>
+              <div class="form-group">
+                  <label>End Date</label>
+                  <input type="text" name="experience_end_${index}" value="${data?.end_date || ''}" placeholder="YYYY-MM or Present">
+              </div>
+              <div class="form-group full-width">
+                  <label>Description</label>
+                  <textarea name="experience_desc_${index}" rows="3">${data?.description || ''}</textarea>
+              </div>
+              <div class="form-group full-width">
+                  <label>Achievements (one per line)</label>
+                  <textarea name="experience_achievements_${index}" rows="3">${data?.achievements ? data.achievements.join('\n') : ''}</textarea>
+              </div>
+          </div>
+      `;
 
-async function saveProfile() {
-    const profileData = collectProfileData();
-    showLoading(true);
-    
-    try {
-        const method = currentProfile ? 'PUT' : 'POST';
-        const response = await fetch('/api/jobseeker/profile', {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(profileData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            currentProfile = result.data;
-            showNotification('Profile saved successfully', 'success');
-        } else {
-            showNotification(result.message || 'Failed to save profile', 'error');
-        }
-    } catch (error) {
-        console.error('Error saving profile:', error);
-        showNotification('Error saving profile', 'error');
-    } finally {
-        showLoading(false);
-    }
-}
+      container.appendChild(section);
+  }
 
-async function validateProfile() {
-    const profileData = collectProfileData();
-    
-    try {
-        const response = await fetch('/api/jobseeker/validate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(profileData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showNotification('Profile is valid', 'success');
-        } else {
-            const errors = result.errors.join('\n');
-            showNotification(`Validation errors:\n${errors}`, 'error');
-        }
-    } catch (error) {
-        console.error('Error validating profile:', error);
-        showNotification('Error validating profile', 'error');
-    }
-}
+  function addEducationSection(data = null) {
+      const container = document.getElementById('educationContainer');
+      const index = container.children.length;
 
-async function analyzeJob() {
-    const jobDescription = document.getElementById('jobDescriptionText').value;
-    
-    if (!jobDescription.trim()) {
-        showNotification('Please enter a job description', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    try {
-        const response = await fetch('/api/jobseeker/analyze', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                job_description: jobDescription
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            currentAnalysis = result.data;
-            displayAnalysisResults(result.data);
-            showNotification('Job analysis completed', 'success');
-        } else {
-            showNotification(result.message || 'Analysis failed', 'error');
-        }
-    } catch (error) {
-        console.error('Error analyzing job:', error);
-        showNotification('Error analyzing job', 'error');
-    } finally {
-        showLoading(false);
-    }
-}
+      const section = document.createElement('div');
+      section.className = 'dynamic-section';
+      section.innerHTML = `
+          <div class="section-header">
+              <h4>Education ${index + 1}</h4>
+              <button type="button" class="btn btn-small btn-danger" onclick="removeSection(this)">Remove</button>
+          </div>
+          <div class="form-grid">
+              <div class="form-group">
+                  <label>Institution *</label>
+                  <input type="text" name="education_institution_${index}" value="${data?.institution || ''}" required>
+              </div>
+              <div class="form-group">
+                  <label>Degree *</label>
+                  <input type="text" name="education_degree_${index}" value="${data?.degree || ''}" required>
+              </div>
+              <div class="form-group">
+                  <label>Field of Study</label>
+                  <input type="text" name="education_field_${index}" value="${data?.field || ''}">
+              </div>
+              <div class="form-group">
+                  <label>Graduation Date</label>
+                  <input type="text" name="education_graduation_${index}" value="${data?.graduation_date || ''}" placeholder="YYYY-MM">
+              </div>
+              <div class="form-group">
+                  <label>GPA</label>
+                  <input type="number" step="0.1" min="0" max="4" name="education_gpa_${index}" value="${data?.gpa || ''}">
+              </div>
+          </div>
+      `;
 
-function displayAnalysisResults(data) {
-    document.getElementById('analysisResults').style.display = 'block';
-    
-    document.getElementById('relevanceScore').textContent = Math.round(data.relevance_score * 100) + '%';
-    
-    displayList('topKeywords', data.keywords.slice(0, 10), 'keyword-tag');
-    displayList('requiredSkills', data.required_skills, 'skill-tag skill-required');
-    displayList('preferredSkills', data.preferred_skills, 'skill-tag skill-preferred');
-    
-    document.getElementById('experienceLevel').textContent = data.experience_level || 'Not specified';
-    document.getElementById('educationReqs').textContent = data.education_requirements || 'Not specified';
-}
+      container.appendChild(section);
+  }
 
-function displayList(containerId, items, className) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    
-    if (items.length === 0) {
-        container.innerHTML = '<div class="no-items">None specified</div>';
-        return;
-    }
-    
-    items.forEach(item => {
-        const element = document.createElement('span');
-        element.className = className;
-        element.textContent = item;
-        container.appendChild(element);
-    });
-}
+  function addProjectSection(data = null) {
+      const container = document.getElementById('projectsContainer');
+      const index = container.children.length;
 
-async function generateResume() {
-    if (!currentProfile) {
-        showNotification('Please save your profile first', 'error');
-        return;
-    }
-    
-    if (!currentAnalysis) {
-        showNotification('Please analyze a job description first', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    try {
-        const response = await fetch('/api/jobseeker/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                profile: currentProfile,
-                analysis: currentAnalysis
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            currentResume = result.data;
-            displayResume(result.data.formatted_resume);
-            showNotification('Resume generated successfully', 'success');
-            
-            document.querySelector('[data-tab="resume"]').click();
-        } else {
-            showNotification(result.message || 'Resume generation failed', 'error');
-        }
-    } catch (error) {
-        console.error('Error generating resume:', error);
-        showNotification('Error generating resume', 'error');
-    } finally {
-        showLoading(false);
-    }
-}
+      const section = document.createElement('div');
+      section.className = 'dynamic-section';
+      section.innerHTML = `
+          <div class="section-header">
+              <h4>Project ${index + 1}</h4>
+              <button type="button" class="btn btn-small btn-danger" onclick="removeSection(this)">Remove</button>
+          </div>
+          <div class="form-grid">
+              <div class="form-group">
+                  <label>Project Name</label>
+                  <input type="text" name="project_name_${index}" value="${data?.name || ''}">
+              </div>
+              <div class="form-group">
+                  <label>URL</label>
+                  <input type="url" name="project_url_${index}" value="${data?.url || ''}">
+              </div>
+              <div class="form-group full-width">
+                  <label>Description</label>
+                  <textarea name="project_description_${index}" rows="3">${data?.description || ''}</textarea>
+              </div>
+              <div class="form-group full-width">
+                  <label>Technologies (comma-separated)</label>
+                  <input type="text" name="project_technologies_${index}" value="${data?.technologies ? data.technologies.join(', ') : ''}">
+              </div>
+          </div>
+      `;
 
-function displayResume(resumeText) {
-    document.getElementById('resumePreview').style.display = 'none';
-    document.getElementById('resumeContent').style.display = 'block';
-    document.getElementById('resumeText').textContent = resumeText;
-}
+      container.appendChild(section);
+  }
 
-async function exportResume(format) {
-    if (!currentResume) {
-        showNotification('Please generate a resume first', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    try {
-        const response = await fetch('/api/jobseeker/export', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                content: currentResume.formatted_resume,
-                format: format,
-                profile: currentProfile,
-                job_description: document.getElementById('jobDescriptionText').value
-            })
-        });
-        
-        if (response.ok) {
-            // Handle file download
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            
-            // Get filename from response headers or generate one
-            const contentDisposition = response.headers.get('Content-Disposition');
-            let filename = `resume.${format}`;
-            if (contentDisposition) {
-                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-                if (filenameMatch) {
-                    filename = filenameMatch[1];
-                }
-            }
-            
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            
-            showNotification(`Resume exported as ${format.toUpperCase()}`, 'success');
-        } else {
-            const result = await response.json();
-            showNotification(result.message || 'Export failed', 'error');
-        }
-    } catch (error) {
-        console.error('Error exporting resume:', error);
-        showNotification('Error exporting resume', 'error');
-    } finally {
-        showLoading(false);
-    }
-}
+  function removeSection(button) {
+      button.closest('.dynamic-section').remove();
+  }
+
+  function populateProfileForm(profile) {
+      if (profile.personal_info) {
+          document.getElementById('name').value = profile.personal_info.name || '';
+          document.getElementById('email').value = profile.personal_info.email || '';
+          document.getElementById('phone').value = profile.personal_info.phone || '';
+          document.getElementById('linkedin').value = profile.personal_info.linkedin || '';
+          document.getElementById('address').value = profile.personal_info.address || '';
+      }
+
+      document.getElementById('summary').value = profile.summary || '';
+
+      if (profile.skills) {
+          document.getElementById('technicalSkills').value = profile.skills.technical ? profile.skills.technical.join(', ') : '';
+          document.getElementById('softSkills').value = profile.skills.soft ? profile.skills.soft.join(', ') : '';
+          document.getElementById('languages').value = profile.skills.languages ? profile.skills.languages.join(', ') : '';
+          document.getElementById('certifications').value = profile.skills.certifications ? profile.skills.certifications.join(', ') : '';
+      }
+
+      if (profile.work_experience) {
+          profile.work_experience.forEach(exp => addExperienceSection(exp));
+      }
+
+      if (profile.education) {
+          profile.education.forEach(edu => addEducationSection(edu));
+      }
+
+      if (profile.projects) {
+          profile.projects.forEach(proj => addProjectSection(proj));
+      }
+  }
+
+  function collectProfileData() {
+      const formData = new FormData(document.getElementById('profileForm'));
+
+      const profile = {
+          personal_info: {
+              name: formData.get('name'),
+              email: formData.get('email'),
+              phone: formData.get('phone'),
+              linkedin: formData.get('linkedin'),
+              address: formData.get('address')
+          },
+          summary: formData.get('summary'),
+          work_experience: [],
+          education: [],
+          skills: {
+              technical: formData.get('technicalSkills') ? formData.get('technicalSkills').split(',').map(s => s.trim()).filter(s => s) : [],
+              soft: formData.get('softSkills') ? formData.get('softSkills').split(',').map(s => s.trim()).filter(s => s) : [],
+              languages: formData.get('languages') ? formData.get('languages').split(',').map(s => s.trim()).filter(s => s) : [],
+              certifications: formData.get('certifications') ? formData.get('certifications').split(',').map(s => s.trim()).filter(s => s) : []
+          },
+          projects: []
+      };
+
+      const experienceContainer = document.getElementById('experienceContainer');
+      Array.from(experienceContainer.children).forEach((section, index) => {
+          const company = formData.get(`experience_company_${index}`);
+          const position = formData.get(`experience_position_${index}`);
+          if (company && position) {
+              const achievements = formData.get(`experience_achievements_${index}`);
+              profile.work_experience.push({
+                  company: company,
+                  position: position,
+                  start_date: formData.get(`experience_start_${index}`),
+                  end_date: formData.get(`experience_end_${index}`),
+                  description: formData.get(`experience_desc_${index}`),
+                  achievements: achievements ? achievements.split('\n').map(a => a.trim()).filter(a => a) : []
+              });
+          }
+      });
+
+      const educationContainer = document.getElementById('educationContainer');
+      Array.from(educationContainer.children).forEach((section, index) => {
+          const institution = formData.get(`education_institution_${index}`);
+          const degree = formData.get(`education_degree_${index}`);
+          if (institution && degree) {
+              const gpa = formData.get(`education_gpa_${index}`);
+              profile.education.push({
+                  institution: institution,
+                  degree: degree,
+                  field: formData.get(`education_field_${index}`),
+                  graduation_date: formData.get(`education_graduation_${index}`),
+                  gpa: gpa ? parseFloat(gpa) : null
+              });
+          }
+      });
+
+      const projectsContainer = document.getElementById('projectsContainer');
+      Array.from(projectsContainer.children).forEach((section, index) => {
+          const name = formData.get(`project_name_${index}`);
+          if (name) {
+              const technologies = formData.get(`project_technologies_${index}`);
+              profile.projects.push({
+                  name: name,
+                  description: formData.get(`project_description_${index}`),
+                  url: formData.get(`project_url_${index}`),
+                  technologies: technologies ? technologies.split(',').map(t => t.trim()).filter(t => t) : []
+              });
+          }
+      });
+
+      return profile;
+  }
+
+  async function saveProfile() {
+      const profileData = collectProfileData();
+      showLoading(true);
+
+      try {
+          const method = currentProfile ? 'PUT' : 'POST';
+          const response = await fetch('/api/jobseeker/profile', {
+              method: method,
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(profileData)
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+              currentProfile = result.data;
+              showNotification('Profile saved successfully', 'success');
+          } else {
+              showNotification(result.message || 'Failed to save profile', 'error');
+          }
+      } catch (error) {
+          console.error('Error saving profile:', error);
+          showNotification('Error saving profile', 'error');
+      } finally {
+          showLoading(false);
+      }
+  }
+
+  async function validateProfile() {
+      const profileData = collectProfileData();
+
+      try {
+          const response = await fetch('/api/jobseeker/validate', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(profileData)
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+              showNotification('Profile is valid', 'success');
+          } else {
+              const errors = result.errors.join('\n');
+              showNotification(`Validation errors:\n${errors}`, 'error');
+          }
+      } catch (error) {
+          console.error('Error validating profile:', error);
+          showNotification('Error validating profile', 'error');
+      }
+  }
+
+  async function analyzeJob() {
+      const jobDescription = document.getElementById('jobDescriptionText').value;
+
+      if (!jobDescription.trim()) {
+          showNotification('Please enter a job description', 'error');
+          return;
+      }
+
+      showLoading(true);
+
+      try {
+          const response = await fetch('/api/jobseeker/analyze', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  job_description: jobDescription
+              })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+              currentAnalysis = result.data;
+              displayAnalysisResults(result.data);
+              showNotification('Job analysis completed', 'success');
+          } else {
+              showNotification(result.message || 'Analysis failed', 'error');
+          }
+      } catch (error) {
+          console.error('Error analyzing job:', error);
+          showNotification('Error analyzing job', 'error');
+      } finally {
+          showLoading(false);
+      }
+  }
+
+  function displayAnalysisResults(data) {
+      document.getElementById('analysisResults').style.display = 'block';
+
+      document.getElementById('relevanceScore').textContent = Math.round(data.relevance_score * 100) + '%';
+
+      displayList('topKeywords', data.keywords.slice(0, 10), 'keyword-tag');
+      displayList('requiredSkills', data.required_skills, 'skill-tag skill-required');
+      displayList('preferredSkills', data.preferred_skills, 'skill-tag skill-preferred');
+
+      document.getElementById('experienceLevel').textContent = data.experience_level || 'Not specified';
+      document.getElementById('educationReqs').textContent = data.education_requirements || 'Not specified';
+  }
+
+  function displayList(containerId, items, className) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+          container.innerHTML = '<div class="no-items">None specified</div>';
+          return;
+      }
+
+      items.forEach(item => {
+          const element = document.createElement('span');
+          element.className = className;
+          element.textContent = item;
+          container.appendChild(element);
+      });
+  }
+
+  async function generateResume() {
+      if (!currentProfile) {
+          showNotification('Please save your profile first', 'error');
+          return;
+      }
+
+      if (!currentAnalysis) {
+          showNotification('Please analyze a job description first', 'error');
+          return;
+      }
+
+      showLoading(true);
+
+      try {
+          const response = await fetch('/api/jobseeker/generate', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  profile: currentProfile,
+                  analysis: currentAnalysis
+              })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+              currentResume = result.data;
+              displayResume(result.data.formatted_resume);
+              showNotification('Resume generated successfully', 'success');
+
+              document.querySelector('[data-tab="resume"]').click();
+          } else {
+              showNotification(result.message || 'Resume generation failed', 'error');
+          }
+      } catch (error) {
+          console.error('Error generating resume:', error);
+          showNotification('Error generating resume', 'error');
+      } finally {
+          showLoading(false);
+      }
+  }
+
+  function displayResume(resumeText) {
+      document.getElementById('resumePreview').style.display = 'none';
+      document.getElementById('resumeContent').style.display = 'block';
+      document.getElementById('resumeText').textContent = resumeText;
+  }
+
+  async function exportResume(format) {
+      if (!currentResume) {
+          showNotification('Please generate a resume first', 'error');
+          return;
+      }
+
+      showLoading(true);
+
+      try {
+          const response = await fetch('/api/jobseeker/export', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  content: currentResume.formatted_resume,
+                  format: format,
+                  profile: currentProfile,
+                  job_description: document.getElementById('jobDescriptionText').value
+              })
+          });
+
+          if (response.ok) {
+              // Handle file download
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.style.display = 'none';
+              a.href = url;
+
+              // Get filename from response headers or generate one
+              const contentDisposition = response.headers.get('Content-Disposition');
+              let filename = `resume.${format}`;
+              if (contentDisposition) {
+                  const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                  if (filenameMatch) {
+                      filename = filenameMatch[1];
+                  }
+              }
+
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              document.body.removeChild(a);
+
+              showNotification(`Resume exported as ${format.toUpperCase()}`, 'success');
+          } else {
+              const result = await response.json();
+              showNotification(result.message || 'Export failed', 'error');
+          }
+      } catch (error) {
+          console.error('Error exporting resume:', error);
+          showNotification('Error exporting resume', 'error');
+      } finally {
+          showLoading(false);
+      }
+  }
 
 
 
-function clearAnalysis() {
-    document.getElementById('jobDescriptionText').value = '';
-    document.getElementById('analysisResults').style.display = 'none';
-    currentAnalysis = null;
-}
+  function clearAnalysis() {
+      document.getElementById('jobDescriptionText').value = '';
+      document.getElementById('analysisResults').style.display = 'none';
+      currentAnalysis = null;
+  }
 
-function showLoading(show) {
-    // Simple loading implementation
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(btn => {
-        if (show) {
-            btn.disabled = true;
-            btn.classList.add('loading');
-        } else {
-            btn.disabled = false;
-            btn.classList.remove('loading');
-        }
-    });
-}
+  function showLoading(show) {
+      // Simple loading implementation
+      const buttons = document.querySelectorAll('.btn');
+      buttons.forEach(btn => {
+          if (show) {
+              btn.disabled = true;
+              btn.classList.add('loading');
+          } else {
+              btn.disabled = false;
+              btn.classList.remove('loading');
+          }
+      });
+  }
 
-function showNotification(message, type) {
-    // Simple notification implementation
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <div class="notification-message">${message}</div>
-        </div>
-    `;
-    
-    // Add to page
-    document.body.appendChild(notification);
-    
-    // Show notification
-    setTimeout(() => notification.classList.add('show'), 100);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => document.body.removeChild(notification), 300);
-    }, 3000);
-}
+  function showNotification(message, type) {
+      // Simple notification implementation
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.innerHTML = `
+          <div class="notification-content">
+              <div class="notification-message">${message}</div>
+          </div>
+      `;
+
+      // Add to page
+      document.body.appendChild(notification);
+
+      // Show notification
+      setTimeout(() => notification.classList.add('show'), 100);
+
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => document.body.removeChild(notification), 300);
+      }, 3000);
+  }
 </script>
 {% endblock %}
